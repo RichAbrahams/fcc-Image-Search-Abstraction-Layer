@@ -1,6 +1,12 @@
 const keys = require('./config/keys');
 const fetch = require('node-fetch');
 
+const buildUrl = (searchTerm, offset) => {
+  const baseUrl = "https://www.googleapis.com/customsearch/v1";
+  const finalUrl = `${baseUrl}?cx=${keys.cx}&key=${keys.googleApiKey}&q=${searchTerm}&start=${offset}&searchType=image`;
+  return finalUrl;
+}
+
 module.exports = app => {
 
   app.get("/", (req, res) => {
@@ -10,8 +16,11 @@ module.exports = app => {
   app.get("/:searchterm", async (req, res) => {
     const searchTerm = req.params.searchterm;
     const offset = req.query.offset;
-    console.log(keys);
-    res.send("ack")
+    const url = buildUrl(searchTerm, offset);
+    const results = await fetch(url);
+    const resultsJson = await results.json();
+    const finalResults = resultsJson.items.map(item => item.image);
+    res.json(finalResults);
   });
 
   app.get("*", async (req, res) => {
