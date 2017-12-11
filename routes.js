@@ -14,13 +14,17 @@ module.exports = app => {
   });
 
   app.get("/:searchterm", async (req, res) => {
-    const searchTerm = req.params.searchterm;
-    const offset = req.query.offset;
-    const url = buildUrl(searchTerm, offset);
-    const results = await fetch(url);
-    const resultsJson = await results.json();
-    const finalResults = resultsJson.items.map(item => item.image);
-    res.json(finalResults);
+    try {
+      const searchTerm = req.params.searchterm;
+      const offset = req.query.offset;
+      const url = buildUrl(searchTerm, offset);
+      const results = await fetch(url);
+      const resultsJson = await results.json();
+      const finalResults = resultsJson.items.map(item => item.image);
+      res.json(finalResults);
+    } catch (err) {
+      res.send(err);
+    }
   });
 
   app.get("*", async (req, res) => {
