@@ -10,26 +10,26 @@ const buildUrl = (searchTerm, offset) => {
 module.exports = app => {
 
   app.get("/", (req, res) => {
-    res.send("no search term provided");
+    res.send("No search term provided");
   });
 
-  app.get("/:searchterm", async (req, res) => {
+  app.get("/:searchterm", async (req, res, next) => {
     try {
       const searchTerm = req.params.searchterm;
-      const offset = req.query.offset + 1 || 1;
+      const offset = parseInt(req.query.offset) + 1 || 1;
       const url = buildUrl(searchTerm, offset);
       const results = await fetch(url);
       const resultsJson = await results.json();
       const finalResults = resultsJson.items.map(item => item.image);
       res.json(finalResults);
     } catch (err) {
-      res.send(err);
+      next(err);
     }
   });
 
-  app.get("*", async (req, res) => {
-    res.send("Error. Please correctly format request. Example: /cats?offset=30")
-  });
+  app.use((err, req, res, next) => {
+    res.status(500).send('An error occured.  Please ensure request is correctly formatted. Example: /cats?offset=30')
+  })
 
 };
 
