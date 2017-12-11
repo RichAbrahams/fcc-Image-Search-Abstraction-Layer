@@ -16,7 +16,7 @@ module.exports = app => {
   app.get("/:searchterm", async (req, res) => {
     try {
       const searchTerm = req.params.searchterm;
-      const offset = req.query.offset;
+      const offset = req.query.offset + 1 || 1;
       const url = buildUrl(searchTerm, offset);
       const results = await fetch(url);
       const resultsJson = await results.json();
@@ -28,7 +28,7 @@ module.exports = app => {
   });
 
   app.get("*", async (req, res) => {
-    res.send("Error. Please correctly format request. Example: /cats?offset=2")
+    res.send("Error. Please correctly format request. Example: /cats?offset=30")
   });
 
 };
